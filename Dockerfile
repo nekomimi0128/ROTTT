@@ -9,7 +9,8 @@ ENV LC_ALL ja_JP.UTF-8
 
 # 日本語環境と必要なパッケージをインストール
 # ビルドの信頼性を高めるため、aptのコマンドを分離
-RUN apt-get update || true && apt-get install -y --no-install-recommends \
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends \
     language-pack-ja \
     font-noto-cjk \
     ibus-mozc \
