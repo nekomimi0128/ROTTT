@@ -8,7 +8,7 @@ ENV LANGUAGE ja_JP:ja
 ENV LC_ALL ja_JP.UTF-8
 
 # 日本語環境と必要なパッケージをインストール
-RUN apt-get update && apt-get install -y \
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* && apt-get update && apt-get install -y \
     language-pack-ja \
     font-noto-cjk \
     ibus-mozc \
@@ -17,9 +17,7 @@ RUN apt-get update && apt-get install -y \
     xfce4 \
     xfce4-goodies \
     novnc \
-    websockify \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    websockify
 
 # VNCサーバーとnoVNCを起動するスクリプトを作成
 RUN echo '#!/bin/bash' > /usr/local/bin/start-vnc.sh \
