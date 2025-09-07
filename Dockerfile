@@ -7,10 +7,10 @@ ENV LANG ja_JP.UTF-8
 ENV LANGUAGE ja_JP:ja
 ENV LC_ALL ja_JP.UTF-8
 
-# リポジトリのミラーを変更し、パッケージをインストール
+# リポジトリのミラーを変更し、日本語環境と必要なパッケージをインストール
 RUN sed -i 's/http:\/\/archive.ubuntu.com/http:\/\/jp.archive.ubuntu.com/g' /etc/apt/sources.list && \
-    apt-get update
-RUN apt-get install -y --no-install-recommends \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
     language-pack-ja \
     font-noto-cjk \
     ibus-mozc \
