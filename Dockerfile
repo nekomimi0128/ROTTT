@@ -7,9 +7,16 @@ ENV LANG ja_JP.UTF-8
 ENV LANGUAGE ja_JP:ja
 ENV LC_ALL ja_JP.UTF-8
 
-# リポジトリを更新し、必要なパッケージをインストール
+# パッケージリストを更新し、日本語パッケージを優先してインストール
 RUN apt-get update && apt-get install -y --no-install-recommends \
     language-pack-ja \
+    locales
+
+# 日本語ロケールの設定を反映
+RUN locale-gen ja_JP.UTF-8
+
+# その他の必要なパッケージをインストール
+RUN apt-get update && apt-get install -y --no-install-recommends \
     font-noto-cjk \
     ibus-mozc \
     sudo \
@@ -31,7 +38,7 @@ RUN echo '[supervisord]' > /etc/supervisor/conf.d/supervisord.conf \
     && echo '[program:novnc]' >> /etc/supervisor/conf.d/supervisord.conf \
     && echo 'command=websockify --web /usr/share/novnc 6080 localhost:5901' >> /etc/supervisor/conf.d/supervisord.conf \
     && echo 'autostart=true' >> /etc/supervisor/conf.d/supervisord.conf \
-    && echo 'autorestart=true' >> /etc/supervisor/conf.d/supervisord.conf
+    && echo 'autorestart=true' >> /etc/supervisor/conf.conf.d/supervisord.conf
 
 # コンテナ起動時にsupervisorを自動実行
 CMD ["/usr/bin/supervisord"]
