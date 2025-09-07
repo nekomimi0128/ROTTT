@@ -7,16 +7,10 @@ ENV LANG ja_JP.UTF-8
 ENV LANGUAGE ja_JP:ja
 ENV LC_ALL ja_JP.UTF-8
 
-# パッケージリストを更新し、日本語パッケージを優先してインストール
+# すべてのパッケージを単一のコマンドでインストールし、キャッシュをクリア
 RUN apt-get update && apt-get install -y --no-install-recommends \
     language-pack-ja \
-    locales
-
-# 日本語ロケールの設定を反映
-RUN locale-gen ja_JP.UTF-8
-
-# その他の必要なパッケージをインストール
-RUN apt-get update && apt-get install -y --no-install-recommends \
+    locales \
     font-noto-cjk \
     ibus-mozc \
     sudo \
@@ -27,6 +21,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     websockify \
     supervisor \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# 日本語ロケールの設定を反映
+RUN locale-gen ja_JP.UTF-8
 
 # VNCサーバーとnoVNCを起動する設定ファイルを作成
 RUN echo '[supervisord]' > /etc/supervisor/conf.d/supervisord.conf \
