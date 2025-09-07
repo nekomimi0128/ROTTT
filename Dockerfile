@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y \
     xfce4-goodies \
     tightvncserver \
     sudo \
-    supervisor \
+    websockify \
     language-pack-ja \
     fonts-ipaexfont-gothic \
     ibus-mozc \
@@ -20,28 +20,22 @@ ENV LANGUAGE ja_JP:ja
 ENV LC_ALL ja_JP.UTF-8
 RUN locale-gen ja_JP.UTF-8
 
-# VNCサーバーの設定
+# VNCサーバーのxstartup設定
 RUN echo '#!/bin/bash' > /root/.vnc/xstartup \
     && echo 'unset SESSION_MANAGER' >> /root/.vnc/xstartup \
     && echo 'unset DBUS_SESSION_BUS_ADDRESS' >> /root/.vnc/xstartup \
     && echo 'startxfce4 &' >> /root/.vnc/xstartup \
-    && chmod +x /root/.vnc/xstartup \
-    && tightvncserver :1
+    && chmod +x /root/.vnc/xstartup
 
-# VNCサーバーを自動起動するためのSupervisor設定
-RUN mkdir -p /etc/supervisor/conf.d \
-    && echo '[supervisord]' > /etc/supervisor/conf.d/supervisord.conf \
-    && echo 'nodaemon=true' >> /etc/supervisor/conf.conf \
-    && echo '[program:vncserver]' >> /etc/supervisor/conf.d/supervisord.conf \
-    && echo 'command=su -c "vncserver :1"' >> /etc/supervisor/conf.d/supervisord.conf \
-    && echo 'user=root' >> /etc/supervisor/conf.d/supervisord.conf \
-    && echo 'autostart=true' >> /etc/supervisor/conf.d/supervisord.conf \
-    && echo 'autorestart=true' >> /etc/supervisor/conf.d/supervisord.conf \
-    && echo 'stdout_logfile=/var/log/supervisor/vncserver.log' >> /etc/supervisor/conf.d/supervisord.conf \
-    && echo 'stderr_logfile=/var/log/supervisor/vncserver_err.log' >> /etc/supervisor/conf.d/supervisord.conf
+# VNCサーバーとnoVNCを起動するスクリプトを作成
+RUN echo '#!/bin/bash' > /usr/local/bin/start-vnc.sh \
+    && echo 'tightvncserver :1 -geometry 1280x800' >> /usr/local/bin/start-vnc.sh \
+    && echo 'websockify --web /usr/share/novnc 6080 localhost:5901' >> /usr/local/bin/start-vnc.sh \
+    && echo 'sleep infinity' >> /usr/local/bin/start-vnc.sh \
+    && chmod +x /usr/local/bin/start-vnc.sh
 
-# コンテナ起動時にSupervisorを起動
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+# コンテナ起動時にスクリプトを実行
+CMD ["/usr/local/bin/start-vnc.sh"]
 
-# VNCポートを公開
-EXPOSE 5901
+# noVNCのポートを公開
+EXPOSE 6080
