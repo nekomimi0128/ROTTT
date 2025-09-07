@@ -1,0 +1,8 @@
+{
+  "name": "Ubuntu GUI",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "remoteUser": "root",
+  "postCreateCommand": "sudo service vncserver start"
+}
